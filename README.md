@@ -1,6 +1,7 @@
 # Cattlex - AI Powered Livestock Health Monitoring
 
 Cattlex is an AI-driven solution to monitor livestock health in real time. This system uses machine learning models such as Decision Tree, Random Forest, Naive Bayes, and K-Nearest Neighbors to predict and analyze livestock health status based on collected data.
+Git:https://github.com/JeyabalanR/CATTLEX1.git
 ## Features
 - Train various machine learning models on livestock health data.
 - Test model performance on new data.
