@@ -1,0 +1,61 @@
+{
+  "registry_version": "1.0.0",
+  "last_updated": "2026-09-15 14:32:28",
+  "primary_model": "Random Forest",
+  "models": {
+    "Random Forest": {
+      "algorithm": "Random Forest",
+      "version": "1.0.0",
+      "file_path": "app/ml/saved_models/random_forest_disease.joblib",
+      "accuracy": 100.0,
+      "f1_weighted": 100.0,
+      "training_time_seconds": 0.1273,
+      "status": "active"
+    },
+    "Gaussian Naive Bayes": {
+      "algorithm": "Gaussian Naive Bayes",
+      "version": "1.0.0",
+      "file_path": "app/ml/saved_models/gaussian_nb_disease.joblib",
+      "accuracy": 100.0,
+      "f1_weighted": 100.0,
+      "training_time_seconds": 0.0028,
+      "status": "active"
+    },
+    "Decision Tree": {
+      "algorithm": "Decision Tree",
+      "version": "1.0.0",
+      "file_path": "app/ml/saved_models/decision_tree_disease.joblib",
+      "accuracy": 63.57,
+      "f1_weighted": 66.89,
+      "training_time_seconds": 0.0057,
+      "status": "active"
+    },
+    "Logistic Regression": {
+      "algorithm": "Logistic Regression",
+      "version": "1.0.0",
+      "file_path": "app/ml/saved_models/logistic_regression_disease.joblib",
+      "accuracy": 100.0,
+      "f1_weighted": 100.0,
+      "training_time_seconds": 0.0333,
+      "status": "active"
+    },
+    "k-NN": {
+      "algorithm": "k-NN",
+      "version": "1.0.0",
+      "file_path": "app/ml/saved_models/knn_disease.joblib",
+      "accuracy": 100.0,
+      "f1_weighted": 100.0,
+      "training_time_seconds": 0.0017,
+      "status": "active"
+    },
+    "Support Vector Machine": {
+      "algorithm": "Support Vector Machine",
+      "version": "1.0.0",
+      "file_path": "app/ml/saved_models/svm_disease.joblib",
+      "accuracy": 100.0,
+      "f1_weighted": 100.0,
+      "training_time_seconds": 0.1415,
+      "status": "active"
+    }
+  }
+}

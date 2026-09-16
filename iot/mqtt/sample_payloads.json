@@ -1,0 +1,38 @@
+{
+  "healthy_telemetry": {
+    "cattle_id": 1,
+    "tag_id": "COW001",
+    "temperature": 38.6,
+    "heart_rate": 64.0,
+    "respiratory_rate": 26.0,
+    "activity_level": 0.85,
+    "feed_intake": 19.5,
+    "water_intake": 65.0,
+    "ambient_temperature": 24.0,
+    "humidity": 60.0
+  },
+  "at_risk_telemetry": {
+    "cattle_id": 2,
+    "tag_id": "COW002",
+    "temperature": 39.7,
+    "heart_rate": 88.0,
+    "respiratory_rate": 38.0,
+    "activity_level": 0.48,
+    "feed_intake": 11.2,
+    "water_intake": 35.0,
+    "ambient_temperature": 25.0,
+    "humidity": 63.0
+  },
+  "critical_telemetry": {
+    "cattle_id": 4,
+    "tag_id": "COW004",
+    "temperature": 40.9,
+    "heart_rate": 112.0,
+    "respiratory_rate": 54.0,
+    "activity_level": 0.16,
+    "feed_intake": 4.5,
+    "water_intake": 16.0,
+    "ambient_temperature": 26.0,
+    "humidity": 65.0
+  }
+}

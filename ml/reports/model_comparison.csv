@@ -1,0 +1,7 @@
+Model,Accuracy,Precision (Weighted),Recall (Weighted),F1-Score (Weighted),Precision (Macro),Recall (Macro),F1-Score (Macro),CV Score Mean,CV Score Std,Training Time (s),Inference Latency (ms/sample)
+Random Forest,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,0.0,0.1273,0.0793
+Gaussian Naive Bayes,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,0.0,0.0028,0.0048
+Decision Tree,63.57,79.03,63.57,66.89,61.02,48.1,51.53,64.34,1.47,0.0057,0.0011
+Logistic Regression,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,0.0,0.0333,0.0009
+k-NN,100.0,100.0,100.0,100.0,100.0,100.0,100.0,99.88,0.24,0.0017,0.0534
+Support Vector Machine,100.0,100.0,100.0,100.0,100.0,100.0,100.0,99.69,0.39,0.1415,0.0128
