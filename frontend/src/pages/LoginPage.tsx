@@ -5,8 +5,8 @@ import { api } from '../services/api';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('farmer@cattlex.io');
-  const [password, setPassword] = useState('farmer123');
+  const [email, setEmail] = useState('admin@cattlex.io');
+  const [password, setPassword] = useState('admin123');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,7 +102,15 @@ export const LoginPage: React.FC = () => {
             <p className="text-[11px] uppercase tracking-wider font-mono text-slate-400 mb-2">
               Quick Role Switch (Demo Credentials):
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => quickFill('admin@cattlex.io', 'admin123')}
+                className="p-2 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-[11px] text-left text-slate-300"
+              >
+                <span className="font-bold block text-purple-400">Admin</span>
+                admin@cattlex.io
+              </button>
               <button
                 type="button"
                 onClick={() => quickFill('farmer@cattlex.io', 'farmer123')}
@@ -116,7 +124,7 @@ export const LoginPage: React.FC = () => {
                 onClick={() => quickFill('vet@cattlex.io', 'vet123')}
                 className="p-2 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-[11px] text-left text-slate-300"
               >
-                <span className="font-bold block text-sky-400">Veterinarian</span>
+                <span className="font-bold block text-sky-400">Vet</span>
                 vet@cattlex.io
               </button>
             </div>

@@ -36,11 +36,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount = 0 }) => {
         {/* User Indicator */}
         <div className="flex items-center gap-2.5 pl-2 border-l border-slate-800">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-            JD
+            JB
           </div>
           <div className="hidden sm:block text-left">
-            <p className="text-xs font-semibold text-slate-200">John Doe</p>
-            <p className="text-[10px] text-slate-400">Registered Farmer</p>
+            <p className="text-xs font-semibold text-slate-200">Jeyabalan</p>
+            <p className="text-[10px] text-slate-400">System Administrator</p>
           </div>
         </div>
       </div>

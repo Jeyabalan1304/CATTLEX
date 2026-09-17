@@ -26,9 +26,9 @@ def seed_db():
     try:
         # 1. Users
         users = [
-            ("Farmer John Doe", "farmer@cattlex.io", "farmer123", "FARMER"),
+            ("Jeyabalan", "farmer@cattlex.io", "farmer123", "FARMER"),
             ("Dr. Sarah Jenkins, DVM", "vet@cattlex.io", "vet123", "VETERINARIAN"),
-            ("System Admin", "admin@cattlex.io", "admin123", "ADMIN")
+            ("Jeyabalan", "admin@cattlex.io", "admin123", "ADMIN")
         ]
         for name, email, pwd, role in users:
             existing = db.query(User).filter(User.email == email).first()
