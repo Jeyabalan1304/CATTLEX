@@ -39,7 +39,7 @@ export const DiseasePredictionPage: React.FC = () => {
       try {
         const [cattleRes, symRes] = await Promise.all([
           api.getCattleList(),
-          api.getSymptoms()
+          api.getFeatures().catch(() => api.getSymptoms())
         ]);
         setCattleList(cattleRes);
         if (cattleRes.length > 0) setSelectedCattleId(cattleRes[0].id);

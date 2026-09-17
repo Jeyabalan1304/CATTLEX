@@ -67,9 +67,15 @@ class ConnectionManager:
             except Exception:
                 pass
 
+from app.api.routes.health import router as health_router
+from app.api.routes.ml import router as ml_router
+from app.api.routes.analytics import router as analytics_router
+
 ws_manager = ConnectionManager()
 
 @app.websocket("/ws")
+@app.websocket("/api/v1/ws/dashboard")
+@app.websocket("/api/ws/dashboard")
 async def websocket_endpoint(websocket: WebSocket):
     await ws_manager.connect(websocket)
     try:
@@ -112,14 +118,21 @@ def root():
         "docs_url": "/docs"
     }
 
-# Register API Routers under /api
-app.include_router(auth_router, prefix=settings.API_V1_STR)
-app.include_router(cattle_router, prefix=settings.API_V1_STR)
-app.include_router(sensor_router, prefix=settings.API_V1_STR)
-app.include_router(prediction_router, prefix=settings.API_V1_STR)
-app.include_router(disease_router, prefix=settings.API_V1_STR)
-app.include_router(alert_router, prefix=settings.API_V1_STR)
-app.include_router(dashboard_router, prefix=settings.API_V1_STR)
-app.include_router(vet_router, prefix=settings.API_V1_STR)
-app.include_router(models_router, prefix=settings.API_V1_STR)
-app.include_router(simulator_router, prefix=settings.API_V1_STR)
+from app.api.routes.simulation import router as simulation_router
+
+# Register all Routers under /api/v1 (primary) and /api (legacy)
+for prefix in [settings.API_V1_STR, settings.API_LEGACY_STR]:
+    app.include_router(health_router, prefix=prefix)
+    app.include_router(ml_router, prefix=prefix)
+    app.include_router(analytics_router, prefix=prefix)
+    app.include_router(auth_router, prefix=prefix)
+    app.include_router(cattle_router, prefix=prefix)
+    app.include_router(sensor_router, prefix=prefix)
+    app.include_router(prediction_router, prefix=prefix)
+    app.include_router(disease_router, prefix=prefix)
+    app.include_router(alert_router, prefix=prefix)
+    app.include_router(dashboard_router, prefix=prefix)
+    app.include_router(vet_router, prefix=prefix)
+    app.include_router(models_router, prefix=prefix)
+    app.include_router(simulator_router, prefix=prefix)
+    app.include_router(simulation_router, prefix=prefix)

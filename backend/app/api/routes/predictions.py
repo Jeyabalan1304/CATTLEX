@@ -15,37 +15,45 @@ from app.automation.veterinary_workflow import trigger_automated_health_workflow
 
 router = APIRouter(prefix="/predictions", tags=["Predictions"])
 
+@router.get("/features")
+def get_prediction_features():
+    from app.services.ml_service import ml_service
+    features = ml_service.features
+    return {
+        "count": len(features),
+        "features": features,
+        "symptoms": [
+            {
+                "key": feat,
+                "display_name": feat.replace("_", " ").replace("-", " ").title()
+            }
+            for feat in features
+        ]
+    }
+
 @router.post("/disease", response_model=DiseasePredictionResponse)
 def predict_cattle_disease(request: DiseasePredictionRequest, db: Session = Depends(get_db)):
-    cattle = db.query(Cattle).filter(Cattle.id == request.cattle_id).first()
+    # Find cattle if registered
+    cattle = None
+    if isinstance(request.cattle_id, int) or (isinstance(request.cattle_id, str) and request.cattle_id.isdigit()):
+        cattle = db.query(Cattle).filter(Cattle.id == int(request.cattle_id)).first()
     if not cattle:
-        raise HTTPException(status_code=404, detail="Cattle not found")
+        cattle = db.query(Cattle).filter(Cattle.tag_id == str(request.cattle_id)).first()
 
     record, ml_res = prediction_service.create_disease_prediction(db, request)
 
-    # If predicted with high confidence and not healthy, ensure alert is flagged
-    if ml_res["confidence"] >= 0.70:
+    # If cattle exists and predicted with high confidence and not healthy, ensure alert is flagged
+    if cattle and ml_res["confidence"] >= 0.70:
         trigger_automated_health_workflow(
             db=db,
             cattle=cattle,
             health_status="AT_RISK" if cattle.status == "HEALTHY" else cattle.status,
             risk_score=75.0 if cattle.status != "CRITICAL" else 90.0,
-            reason=f"High-confidence symptom prediction for {ml_res['display_name']} ({ml_res['confidence']*100:.1f}%)",
+            reason=f"High-confidence symptom prediction for {ml_res.get('display_name', ml_res['predicted_disease'])} ({ml_res['confidence']*100:.1f}%)",
             confidence=ml_res["confidence"]
         )
 
-    return {
-        "cattle_id": request.cattle_id,
-        "predicted_disease": ml_res["predicted_disease"],
-        "display_name": ml_res["display_name"],
-        "confidence": ml_res["confidence"],
-        "model_name": ml_res["model_name"],
-        "top_predictions": ml_res["top_predictions"],
-        "important_features": ml_res["important_features"],
-        "recommendation": ml_res["recommendation"],
-        "disclaimer": "This is a predictive decision-support system and not a definitive veterinary diagnosis. Professional veterinary evaluation is recommended.",
-        "timestamp": record.timestamp
-    }
+    return ml_res
 
 @router.post("/health", response_model=HealthPredictionResponse)
 def predict_cattle_health(request: HealthPredictionRequest, db: Session = Depends(get_db)):

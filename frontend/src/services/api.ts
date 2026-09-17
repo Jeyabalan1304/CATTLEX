@@ -39,18 +39,21 @@ export const api = {
   ingestReading: (data: any) => fetchJson<any>(`${API_BASE}/sensors/readings`, { method: 'POST', body: JSON.stringify(data) }),
 
   // Diseases & Predictions
+  getFeatures: () => fetchJson<{ count: number; features: string[]; symptoms: { key: string; display_name: string }[] }>(`${API_BASE}/v1/predictions/features`),
   getSymptoms: () => fetchJson<{ count: number; symptoms: { key: string; display_name: string }[] }>(`${API_BASE}/diseases/symptoms`),
   getDiseaseClasses: () => fetchJson<any>(`${API_BASE}/diseases/classes`),
-  predictDisease: (cattleId: number, symptoms: Record<string, boolean>, modelName = 'Random Forest') =>
-    fetchJson<any>(`${API_BASE}/predictions/disease`, {
+  predictDisease: (cattleId: any, symptoms: Record<string, any>, modelName = 'Random Forest') =>
+    fetchJson<any>(`${API_BASE}/v1/predictions/disease`, {
       method: 'POST',
       body: JSON.stringify({ cattle_id: cattleId, symptoms, model_name: modelName }),
     }),
-  getPredictionHistory: (cattleId: number) => fetchJson<any>(`${API_BASE}/predictions/${cattleId}`),
+  getPredictionHistory: (cattleId: any) => fetchJson<any>(`${API_BASE}/predictions/${cattleId}`),
 
   // Alerts
-  getAlerts: (status?: string) => fetchJson<any[]>(`${API_BASE}/alerts${status ? `?status=${status}` : ''}`),
-  resolveAlert: (alertId: number) => fetchJson<any>(`${API_BASE}/alerts/${alertId}/resolve`, { method: 'POST' }),
+  getAlerts: (status?: string, severity?: string) => 
+    fetchJson<any[]>(`${API_BASE}/v1/alerts${status ? `?status=${status}` : ''}${severity ? `&severity=${severity}` : ''}`),
+  acknowledgeAlert: (alertId: number) => fetchJson<any>(`${API_BASE}/v1/alerts/${alertId}/acknowledge`, { method: 'POST' }),
+  resolveAlert: (alertId: number) => fetchJson<any>(`${API_BASE}/v1/alerts/${alertId}/resolve`, { method: 'POST' }),
 
   // Veterinary
   getAppointments: (status?: string) => fetchJson<any[]>(`${API_BASE}/veterinarians/appointments${status ? `?status=${status}` : ''}`),
@@ -58,13 +61,29 @@ export const api = {
   updateAppointment: (id: number, data: any) => fetchJson<any>(`${API_BASE}/veterinarians/appointments/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
   // Models & Registry
+  getModelInfo: () => fetchJson<any>(`${API_BASE}/v1/ml/model-info`),
   getModelPerformance: () => fetchJson<any>(`${API_BASE}/models/performance`),
   getModelRegistry: () => fetchJson<any>(`${API_BASE}/models`),
 
+  // Analytics & Explainability
+  getAnalyticsOverview: (days = 30) => fetchJson<any>(`${API_BASE}/v1/analytics/overview?days=${days}`),
+  getDiseaseAnalytics: (days = 30) => fetchJson<any>(`${API_BASE}/v1/analytics/diseases?days=${days}`),
+  getFeatureImportance: (top_n = 20) => fetchJson<any>(`${API_BASE}/v1/analytics/feature-importance?top_n=${top_n}`),
+  getHealthAnalytics: (days = 7) => fetchJson<any>(`${API_BASE}/v1/analytics/health?days=${days}`),
+
   // IoT Simulator
-  getSimulatorStatus: () => fetchJson<any>(`${API_BASE}/simulator/status`),
-  startSimulator: () => fetchJson<any>(`${API_BASE}/simulator/start`, { method: 'POST' }),
-  stopSimulator: () => fetchJson<any>(`${API_BASE}/simulator/stop`, { method: 'POST' }),
-  triggerAbnormal: (tagId: string) => fetchJson<any>(`${API_BASE}/simulator/trigger-abnormal`, { method: 'POST', body: JSON.stringify({ tag_id: tagId }) }),
-  resetSimulator: () => fetchJson<any>(`${API_BASE}/simulator/reset`, { method: 'POST' }),
+  getSimulatorStatus: () => fetchJson<any>(`${API_BASE}/v1/simulation/status`),
+  startSimulator: (scenario = 'NORMAL', interval = 4.0) => 
+    fetchJson<any>(`${API_BASE}/v1/simulation/start`, { 
+      method: 'POST', 
+      body: JSON.stringify({ scenario, interval_seconds: interval }) 
+    }),
+  stopSimulator: () => fetchJson<any>(`${API_BASE}/v1/simulation/stop`, { method: 'POST' }),
+  triggerAbnormal: (tagId: string) => fetchJson<any>(`${API_BASE}/v1/simulation/trigger-abnormal`, { method: 'POST', body: JSON.stringify({ tag_id: tagId }) }),
+  resetSimulator: () => fetchJson<any>(`${API_BASE}/v1/simulation/reset`, { method: 'POST' }),
+
+  // Health
+  getHealth: () => fetchJson<any>(`${API_BASE}/v1/health`),
+  getReadiness: () => fetchJson<any>(`${API_BASE}/v1/health/readiness`),
+  deleteCattle: (id: any) => fetchJson<any>(`${API_BASE}/cattle/${id}`, { method: 'DELETE' }),
 };

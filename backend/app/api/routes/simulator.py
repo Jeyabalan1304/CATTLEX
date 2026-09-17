@@ -5,6 +5,12 @@ from app.iot.sensor_simulator import simulator
 
 router = APIRouter(prefix="/simulator", tags=["IoT Sensor Simulator"])
 
+class SimulationStartRequest(BaseModel):
+    scenario: Optional[str] = "NORMAL"  # NORMAL, AT_RISK, CRITICAL, DISEASE_EVENT
+    cattle_count: Optional[int] = 5
+    interval_seconds: Optional[float] = 4.0
+    selected_cattle: Optional[list] = None
+
 class TriggerAbnormalRequest(BaseModel):
     tag_id: str = "COW001"
 
@@ -17,13 +23,37 @@ class SimulatorStatusResponse(BaseModel):
 def get_simulator_status():
     return {
         "running": simulator.running,
+        "interval_seconds": simulator._interval_seconds,
+        "cattle_count": len(simulator.cattle_states),
         "cattle": list(simulator.cattle_states.values())
     }
 
 @router.post("/start")
-def start_simulator():
+def start_simulator(req: Optional[SimulationStartRequest] = None):
+    if req:
+        if req.interval_seconds:
+            simulator._interval_seconds = max(1.0, float(req.interval_seconds))
+        if req.scenario:
+            scen = req.scenario.upper()
+            if scen == "CRITICAL":
+                for tag in simulator.cattle_states:
+                    simulator.cattle_states[tag]["state"] = "CRITICAL"
+            elif scen == "AT_RISK":
+                for tag in simulator.cattle_states:
+                    simulator.cattle_states[tag]["state"] = "AT_RISK"
+            elif scen == "DISEASE_EVENT":
+                target = (req.selected_cattle[0] if req.selected_cattle else "COW001")
+                simulator.trigger_abnormal_event(target)
+            elif scen == "NORMAL":
+                simulator.reset_cattle()
+
     simulator.start()
-    return {"status": "started", "running": simulator.running}
+    return {
+        "status": "started",
+        "running": simulator.running,
+        "scenario": req.scenario if req else "NORMAL",
+        "interval_seconds": simulator._interval_seconds
+    }
 
 @router.post("/stop")
 def stop_simulator():

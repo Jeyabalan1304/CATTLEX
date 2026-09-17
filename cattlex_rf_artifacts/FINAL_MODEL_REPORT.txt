@@ -1,0 +1,59 @@
+CATTLEX FINAL RANDOM FOREST MODEL
+=================================
+
+DATA
+Original rows: 2044
+Unique symptom patterns: 433
+Features: 93
+Classes: 26
+Duplicate rows: 1611 (78.82%)
+Contradictory duplicate patterns: 0
+
+LEAKAGE-SAFE EVALUATION
+Training unique patterns: 346
+Independent test patterns: 87
+Exact train/test overlap: 0
+CV: Repeated Stratified 5-fold x 10 repeats
+Model selection metric: Macro-F1
+Independent test used for selection: NO
+
+SELECTED RANDOM FOREST
+Parameters:
+{
+  "n_estimators": 500,
+  "max_depth": 16,
+  "min_samples_split": 2,
+  "min_samples_leaf": 1,
+  "max_features": "log2",
+  "criterion": "gini",
+  "class_weight": "balanced"
+}
+
+REPEATED CV
+Accuracy: 1.0000 +/- 0.0000
+Macro-F1: 1.0000 +/- 0.0000
+Weighted-F1: 1.0000 +/- 0.0000
+Balanced Accuracy: 1.0000 +/- 0.0000
+
+INDEPENDENT TEST — EVALUATED ONCE
+Accuracy: 0.9885
+Macro-F1: 0.9487
+Weighted-F1: 0.9847
+Macro Precision: 0.9423
+Macro Recall: 0.9615
+Balanced Accuracy: 0.9615
+
+RUNTIME
+Fit time: 0.4573 seconds
+Test batch prediction: 0.0582 seconds
+Average test prediction latency: 0.6688 ms/sample
+
+ARTIFACTS
+cattlex_rf_model.joblib
+model_metadata.json
+rf_cv_candidates.csv
+classification_report.csv
+confusion_matrix.csv
+feature_importance.csv
+train_unique_patterns.csv
+test_unique_patterns.csv

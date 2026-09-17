@@ -1,51 +1,130 @@
-# CATTLEX REST API Specification
+# CATTLEX API Specification (v1 & Legacy Endpoints)
 
-The CATTLEX backend exposes a fully documented RESTful API conforming to OpenAPI 3.1. Interactive Swagger UI documentation is accessible at `/docs`, and ReDoc is at `/redoc`.
+Interactive OpenAPI / Swagger UI is available at `/docs`, and ReDoc documentation is at `/redoc`.
 
-## 1. Core Endpoints
+Base URL Prefix: `/api/v1` (with `/api` legacy aliases supported).
 
-### Authentication (`/api/auth`)
-- `POST /api/auth/register`: Register new user (`FARMER`, `VETERINARIAN`, `ADMIN`).
-- `POST /api/auth/login`: Authenticate with email/password and receive JWT access token.
+---
 
-### Cattle Fleet Management (`/api/cattle`)
-- `GET /api/cattle`: Retrieve all registered cattle with latest vitals, risk scores, and alert counts.
-- `POST /api/cattle`: Register a new cattle entity.
-- `GET /api/cattle/{id}`: Detailed cattle profile, latest vitals, and prediction summaries.
-- `PUT /api/cattle/{id}`: Update cattle metadata.
-- `DELETE /api/cattle/{id}`: Unregister cattle record.
+## 1. System Health & Readiness
 
-### Sensor Telemetry (`/api/sensors`)
-- `POST /api/sensors/readings`: Ingest real-time collar telemetry packet. Triggers risk analysis and alert workflows.
-- `GET /api/sensors/{cattle_id}`: Retrieve historical telemetry time series.
-- `GET /api/sensors/{cattle_id}/latest`: Get current vital readings for cattle.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/health` | Service health status, database connectivity, ML model state, and simulator status. |
+| `GET` | `/api/v1/health/readiness` | Readiness check verifying all 93 features and 26 classes are loaded. |
 
-### Predictive Analytics (`/api/predictions`)
-- `POST /api/predictions/disease`: Submit observed symptoms and receive multi-disease inference with top 3 differentials and XAI feature signals.
-- `POST /api/predictions/health`: Compute vital health risk and health status classification.
-- `GET /api/predictions/{cattle_id}`: Retrieve historical prediction records.
+---
 
-### Alerts & Triage (`/api/alerts`)
-- `GET /api/alerts`: List active/resolved health alerts with severity filter.
-- `POST /api/alerts/{id}/resolve`: Acknowledge and resolve an alert.
+## 2. Machine Learning Model Management & Explainability
 
-### Veterinary Workflow (`/api/veterinarians`)
-- `GET /api/veterinarians`: List accredited veterinarians.
-- `GET /api/veterinarians/appointments`: List clinical appointments and priorities.
-- `POST /api/veterinarians/appointments`: Schedule consultation.
-- `PUT /api/veterinarians/appointments/{id}`: Update appointment triage status.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/ml/model-info` | Production Random Forest specifications, independent test accuracy (98.85%), Macro-F1 (94.87%), and latency (0.669 ms). |
+| `GET` | `/api/v1/analytics/feature-importance` | Top learned Gini feature importances labeled scientifically as model feature importance. |
 
-### Dashboard & Trends (`/api/dashboard`)
-- `GET /api/dashboard/summary`: Herd-level KPIs (Total, Healthy, At Risk, Critical, Alerts) and average vitals.
-- `GET /api/dashboard/trends`: Aggregate telemetry trend time series.
+---
 
-### Model Benchmarks & Registry (`/api/models`)
-- `GET /api/models`: Model registry status and active algorithm versions.
-- `GET /api/models/performance`: Complete 6-model benchmark metrics, confusion matrices, and feature importances.
+## 3. Disease Prediction API
 
-### IoT Simulator (`/api/simulator`)
-- `GET /api/simulator/status`: Current simulator running state and cattle states.
-- `POST /api/simulator/start`: Start background telemetry generation.
-- `POST /api/simulator/stop`: Stop telemetry generation.
-- `POST /api/simulator/trigger-abnormal`: Trigger sickness onset in a specific cattle.
-- `POST /api/simulator/reset`: Reset cattle vitals to normal baseline.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/predictions/features` | Returns the list of 93 validated symptom features. |
+| `POST` | `/api/v1/predictions/disease` | Submits observed symptoms dictionary and returns predicted disease, confidence, confidence band (`HIGH`, `MODERATE`, `LOW`), top 3 differentials with probabilities, and model version. |
+| `GET` | `/api/v1/predictions/{cattle_id}` | Retrieves historical predictions for specific cattle. |
+
+### Sample Request: `POST /api/v1/predictions/disease`
+```json
+{
+  "cattle_id": "COW001",
+  "symptoms": {
+    "fever": 1,
+    "depression": 1,
+    "anorexia": 1,
+    "udder_swelling": 1,
+    "milk_flakes": 1
+  }
+}
+```
+
+### Sample Response:
+```json
+{
+  "prediction_id": "8f031201-90a4-4444-8461-ca31d4e74880",
+  "cattle_id": "COW001",
+  "predicted_disease": "mastitis",
+  "display_name": "Mastitis",
+  "confidence": 0.942,
+  "confidence_band": "HIGH",
+  "top_3": [
+    {"disease": "mastitis", "display_name": "Mastitis", "probability": 0.942},
+    {"disease": "foot_rot", "display_name": "Foot Rot", "probability": 0.024},
+    {"disease": "blackleg", "display_name": "Blackleg", "probability": 0.011}
+  ],
+  "model_version": "CATTLEX-RF-v1",
+  "disclaimer": "AI decision-support prediction — veterinary assessment required."
+}
+```
+
+---
+
+## 4. Cattle Management
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/cattle` | Retrieve all cattle with status, latest vitals, and alert counts. |
+| `GET` | `/api/v1/cattle/{id}` | Detailed cattle profile by integer ID or tag string (`COW001`). |
+| `POST` | `/api/v1/cattle` | Register new cattle entity. |
+| `PUT` | `/api/v1/cattle/{id}` | Update cattle record. |
+| `DELETE` | `/api/v1/cattle/{id}` | Remove cattle record. |
+
+---
+
+## 5. IoT Sensor Telemetry
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/sensors/readings` | Ingest sensor telemetry packet, runs physiological risk scoring, triggers alerts, and broadcasts to dashboard. |
+| `GET` | `/api/v1/sensors/{cattle_id}` | Retrieve historical telemetry series. |
+| `GET` | `/api/v1/sensors/{cattle_id}/latest`| Get current vital readings. |
+
+---
+
+## 6. Alerts & Triage
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/alerts` | List alerts (supports `status`, `severity`, `cattle_id` filtering). |
+| `POST` | `/api/v1/alerts/{id}/acknowledge` | Mark alert as acknowledged. |
+| `POST` | `/api/v1/alerts/{id}/resolve` | Resolve an active alert. |
+
+---
+
+## 7. IoT Simulation Engine
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/simulation/status` | Current simulator state, cattle count, and interval. |
+| `POST` | `/api/v1/simulation/start` | Start simulator with scenario (`NORMAL`, `AT_RISK`, `CRITICAL`, `DISEASE_EVENT`). |
+| `POST` | `/api/v1/simulation/stop` | Stop simulator. |
+| `POST` | `/api/v1/simulation/trigger-abnormal` | Trigger gradual onset of acute illness for specific animal. |
+| `POST` | `/api/v1/simulation/reset` | Reset all simulated cattle to normal physiological range. |
+
+---
+
+## 8. Real-Time WebSockets
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `WS` | `/api/v1/ws/dashboard` | Live telemetry stream, risk updates, prediction events, and alerts. |
+| `WS` | `/ws` | Root WebSocket connection alias. |
+
+---
+
+## 9. Analytics & Reporting
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/analytics/overview` | Herd health KPIs and vitals averages with date filtering. |
+| `GET` | `/api/v1/analytics/diseases` | Frequency distribution of detected diseases. |
+| `GET` | `/api/v1/analytics/health` | Physiological risk level distribution (`HEALTHY`, `AT_RISK`, `CRITICAL`). |
+| `GET` | `/api/v1/analytics/sensors` | Multi-vital historical time series trends. |

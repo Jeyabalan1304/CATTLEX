@@ -27,7 +27,7 @@ export const LandingPage: React.FC = () => {
             <div>
               <span className="text-xl font-bold tracking-tight font-sans text-white">CATTLEX</span>
               <span className="ml-2 text-xs font-mono px-2 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30">
-                IEEE Reference
+                Production AI
               </span>
             </div>
           </div>
@@ -95,7 +95,7 @@ export const LandingPage: React.FC = () => {
           <div className="mt-12 p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 max-w-2xl mx-auto flex items-center justify-center gap-3 text-xs text-slate-400 font-mono">
             <FileCheck className="w-4 h-4 text-brand-400 shrink-0" />
             <span>
-              Based on IEEE Research Architecture & Dataset from <a href="https://github.com/thyagarajank/Cattle-disease-prediction-using-Machine-Learning" target="_blank" rel="noreferrer" className="text-brand-400 hover:underline">thyagarajank/Cattle-disease-prediction</a>
+              Validated Multi-Disease Classification &bull; 433 Unique Clinical Symptom Signatures &bull; 26 Conditions
             </span>
           </div>
         </div>

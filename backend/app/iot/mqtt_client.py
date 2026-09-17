@@ -97,18 +97,19 @@ class CATTLEXMqttClient:
                 return {"status": "ignored", "reason": "Cattle not found"}
 
             # Create and store sensor reading
+            act_val = data.get("activity_level") if data.get("activity_level") is not None else data.get("activity", 0.8)
             reading = SensorReading(
                 cattle_id=cattle.id,
                 temperature=float(data["temperature"]),
                 heart_rate=float(data["heart_rate"]),
                 respiratory_rate=float(data["respiratory_rate"]),
-                activity_level=float(data["activity_level"]),
+                activity_level=float(act_val),
                 feed_intake=float(data["feed_intake"]),
                 water_intake=float(data["water_intake"]),
-                ambient_temperature=float(data.get("ambient_temperature", 24.0)),
-                humidity=float(data.get("humidity", 60.0)),
-                latitude=float(data.get("latitude", 12.9716)),
-                longitude=float(data.get("longitude", 77.5946))
+                ambient_temperature=float(data.get("ambient_temperature") or 24.0),
+                humidity=float(data.get("humidity") or 60.0),
+                latitude=float(data["latitude"]) if data.get("latitude") is not None else 12.9716,
+                longitude=float(data["longitude"]) if data.get("longitude") is not None else 77.5946
             )
             db.add(reading)
             db.commit()

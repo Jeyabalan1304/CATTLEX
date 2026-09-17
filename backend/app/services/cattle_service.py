@@ -10,53 +10,63 @@ from app.schemas.cattle import CattleCreate, CattleUpdate
 def get_all_cattle(db: Session) -> List[Cattle]:
     return db.query(Cattle).order_by(Cattle.tag_id).all()
 
-def get_cattle_by_id(db: Session, cattle_id: int) -> Optional[Cattle]:
-    return db.query(Cattle).filter(Cattle.id == cattle_id).first()
-
-def get_cattle_by_tag(db: Session, tag_id: str) -> Optional[Cattle]:
-    return db.query(Cattle).filter(Cattle.tag_id == tag_id).first()
+def get_cattle_by_identifier(db: Session, identifier: any) -> Optional[Cattle]:
+    if isinstance(identifier, int) or (isinstance(identifier, str) and identifier.isdigit()):
+        c = db.query(Cattle).filter(Cattle.id == int(identifier)).first()
+        if c:
+            return c
+    ident_str = str(identifier)
+    return db.query(Cattle).filter(
+        (Cattle.tag_id == ident_str) | 
+        (Cattle.cattle_id == ident_str) | 
+        (Cattle.name == ident_str)
+    ).first()
 
 def create_cattle(db: Session, cattle_in: CattleCreate) -> Cattle:
-    cattle = Cattle(**cattle_in.dict())
+    data = cattle_in.dict()
+    if not data.get("cattle_id"):
+        data["cattle_id"] = data.get("tag_id")
+    cattle = Cattle(**data)
     db.add(cattle)
     db.commit()
     db.refresh(cattle)
     return cattle
 
-def update_cattle(db: Session, cattle_id: int, cattle_in: CattleUpdate) -> Optional[Cattle]:
-    cattle = get_cattle_by_id(db, cattle_id)
+def update_cattle(db: Session, cattle_id: any, cattle_in: CattleUpdate) -> Optional[Cattle]:
+    cattle = get_cattle_by_identifier(db, cattle_id)
     if not cattle:
         return None
     for field, val in cattle_in.dict(exclude_unset=True).items():
-        setattr(cattle, field, val)
+        if val is not None and hasattr(cattle, field):
+            setattr(cattle, field, val)
     db.commit()
     db.refresh(cattle)
     return cattle
 
-def delete_cattle(db: Session, cattle_id: int) -> bool:
-    cattle = get_cattle_by_id(db, cattle_id)
+def delete_cattle(db: Session, cattle_id: any) -> bool:
+    cattle = get_cattle_by_identifier(db, cattle_id)
     if not cattle:
         return False
     db.delete(cattle)
     db.commit()
     return True
 
-def get_cattle_profile_summary(db: Session, cattle_id: int) -> dict:
-    cattle = get_cattle_by_id(db, cattle_id)
+def get_cattle_profile_summary(db: Session, cattle_id: any) -> dict:
+    cattle = get_cattle_by_identifier(db, cattle_id)
     if not cattle:
         return {}
 
     latest_reading = db.query(SensorReading).filter(
-        SensorReading.cattle_id == cattle_id
+        SensorReading.cattle_id == cattle.id
     ).order_by(desc(SensorReading.timestamp)).first()
 
     latest_prediction = db.query(HealthPrediction).filter(
-        HealthPrediction.cattle_id == cattle_id
+        HealthPrediction.cattle_id == cattle.id
     ).order_by(desc(HealthPrediction.timestamp)).first()
 
     active_alerts = db.query(Alert).filter(
-        Alert.cattle_id == cattle_id,
-        Alert.status == "ACTIVE"
+        Alert.cattle_id == cattle.id,
+        Alert.status.in_(["ACTIVE", "OPEN"])
     ).count()
 
     return {

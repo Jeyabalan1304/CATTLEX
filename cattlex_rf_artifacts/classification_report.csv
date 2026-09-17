@@ -1,0 +1,30 @@
+,precision,recall,f1-score,support
+acetonaemia,1.0,1.0,1.0,4.0
+blackleg,1.0,1.0,1.0,5.0
+bloat,1.0,1.0,1.0,1.0
+calf_diphtheria,1.0,1.0,1.0,5.0
+calf_pneumonia,1.0,1.0,1.0,5.0
+coccidiosis,1.0,1.0,1.0,1.0
+cryptosporidiosis,1.0,1.0,1.0,5.0
+displaced_abomasum,0.0,0.0,0.0,1.0
+fatty_liver_syndrome,1.0,1.0,1.0,3.0
+fog_fever,1.0,1.0,1.0,1.0
+foot_and_mouth,1.0,1.0,1.0,5.0
+foot_rot,1.0,1.0,1.0,3.0
+gut_worms,1.0,1.0,1.0,4.0
+infectious_bovine_rhinotracheitis,1.0,1.0,1.0,5.0
+listeriosis,1.0,1.0,1.0,5.0
+liver_fluke,1.0,1.0,1.0,1.0
+mastitis,1.0,1.0,1.0,5.0
+necrotic_enteritis,1.0,1.0,1.0,1.0
+peri_weaning_diarrhoea,0.5,1.0,0.6666666666666666,1.0
+ragwort_poisoning,1.0,1.0,1.0,1.0
+rift_valley_fever,1.0,1.0,1.0,4.0
+rumen_acidosis,1.0,1.0,1.0,5.0
+schmallen_berg_virus,1.0,1.0,1.0,5.0
+traumatic_reticulitis,1.0,1.0,1.0,1.0
+trypanosomosis,1.0,1.0,1.0,5.0
+wooden_tongue,1.0,1.0,1.0,5.0
+accuracy,0.9885057471264368,0.9885057471264368,0.9885057471264368,0.9885057471264368
+macro avg,0.9423076923076923,0.9615384615384616,0.9487179487179487,87.0
+weighted avg,0.9827586206896551,0.9885057471264368,0.9846743295019158,87.0

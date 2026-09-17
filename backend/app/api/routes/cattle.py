@@ -57,7 +57,7 @@ def add_cattle(cattle_in: CattleCreate, db: Session = Depends(get_db)):
     return cattle_service.create_cattle(db, cattle_in)
 
 @router.get("/{cattle_id}")
-def get_cattle_profile(cattle_id: int, db: Session = Depends(get_db)):
+def get_cattle_profile(cattle_id: str, db: Session = Depends(get_db)):
     data = cattle_service.get_cattle_profile_summary(db, cattle_id)
     if not data or not data.get("cattle"):
         raise HTTPException(status_code=404, detail="Cattle record not found")
@@ -67,6 +67,7 @@ def get_cattle_profile(cattle_id: int, db: Session = Depends(get_db)):
 
     return {
         "id": c.id,
+        "cattle_id": getattr(c, "cattle_id", c.tag_id) or c.tag_id,
         "tag_id": c.tag_id,
         "name": c.name,
         "breed": c.breed,
@@ -74,14 +75,17 @@ def get_cattle_profile(cattle_id: int, db: Session = Depends(get_db)):
         "sex": c.sex,
         "weight": c.weight,
         "farm_id": c.farm_id,
+        "farm": getattr(c, "farm_id", "FARM-01"),
+        "location": getattr(c, "location", "Pasture Grid Alpha") or "Pasture Grid Alpha",
         "status": c.status,
+        "registration_date": getattr(c, "registration_date", c.created_at) or c.created_at,
         "created_at": c.created_at,
         "updated_at": c.updated_at,
         "latest_vitals": {
             "temperature": lr.temperature if lr else None,
             "heart_rate": lr.heart_rate if lr else None,
             "respiratory_rate": lr.respiratory_rate if lr else None,
-            "activity_level": lr.activity_level if lr else None,
+            "activity_level": getattr(lr, "activity", None) or getattr(lr, "activity_level", None) if lr else None,
             "feed_intake": lr.feed_intake if lr else None,
             "water_intake": lr.water_intake if lr else None,
             "timestamp": lr.timestamp if lr else None
@@ -97,14 +101,14 @@ def get_cattle_profile(cattle_id: int, db: Session = Depends(get_db)):
     }
 
 @router.put("/{cattle_id}", response_model=CattleResponse)
-def update_cattle(cattle_id: int, cattle_in: CattleUpdate, db: Session = Depends(get_db)):
+def update_cattle(cattle_id: str, cattle_in: CattleUpdate, db: Session = Depends(get_db)):
     updated = cattle_service.update_cattle(db, cattle_id, cattle_in)
     if not updated:
         raise HTTPException(status_code=404, detail="Cattle record not found")
     return updated
 
 @router.delete("/{cattle_id}")
-def remove_cattle(cattle_id: int, db: Session = Depends(get_db)):
+def remove_cattle(cattle_id: str, db: Session = Depends(get_db)):
     success = cattle_service.delete_cattle(db, cattle_id)
     if not success:
         raise HTTPException(status_code=404, detail="Cattle record not found")
